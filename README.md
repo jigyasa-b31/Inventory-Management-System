@@ -9,7 +9,7 @@ Inventory Management System is a database-driven project built using Python and 
 - Excel (for report generation)
 - mysql-connector-python
 
-## Planned Features
+## Features
 - Add Product
 - View Products
 - Update Product
@@ -33,7 +33,14 @@ Stores purchase records and stock entries.
 Stores sales transactions.
 
 ## Project Status
-Database design completed and Product Management module implemented.
+Database design completed and core Inventory Management System successfully implemented.
+
+### Current Progress
+- Python-MySQL Connectivity ✅
+- Product CRUD Operations ✅
+- Purchase Management ✅
+- Sales Management ✅
+- Automatic Stock Tracking ✅
 
 ## Author
 Jigyasa Bareja
@@ -58,11 +65,19 @@ Jigyasa Bareja
 - Implemented Delete Product feature
 - Completed CRUD operations for Products table
 
+### Day 3
+
+- Implemented menu-driven Inventory Management System
+- Created Purchase Management module
+- Created Sales Management module
+- Added automatic stock increase on purchases
+- Added automatic stock decrease on sales
+- Implemented stock availability validation
+- Added inventory transaction logic
+
 ### Upcoming
-- Purchase Management
-- Sales Management
-- Stock Tracking
 - Inventory Reports
+- Low Stock Alerts
 - Excel Export
 
 ## Current Features
@@ -72,6 +87,12 @@ Jigyasa Bareja
 - Add Products
 - Update Product Stock
 - Delete Products
+
+### Inventory Management
+- Purchase Management
+- Sales Management
+- Automatic Stock Tracking
+- Stock Validation
 
 ### Database Features
 - Primary Key
