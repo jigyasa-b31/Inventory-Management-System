@@ -123,6 +123,55 @@ def add_purchase():
 
 
 
+def add_sale():
+
+    product_id = int(input("Enter Product ID: "))
+    quantity = int(input("Enter Sale Quantity: "))
+    sale_date = input("Enter Sale Date (YYYY-MM-DD): ")
+
+    cursor.execute(
+        "SELECT stock FROM products WHERE product_id = %s",
+        (product_id,)
+    )
+
+    result = cursor.fetchone()
+
+    if result is None:
+        print("Product ID Not Found!")
+        return
+
+    current_stock = result[0]
+
+    if quantity > current_stock:
+        print("Not Enough Stock Available!")
+        return
+
+    sale_query = """
+    INSERT INTO sales
+    (product_id, quantity, sale_date)
+    VALUES (%s, %s, %s)
+    """
+
+    sale_values = (product_id, quantity, sale_date)
+
+    cursor.execute(sale_query, sale_values)
+
+    stock_query = """
+    UPDATE products
+    SET stock = stock - %s
+    WHERE product_id = %s
+    """
+
+    stock_values = (quantity, product_id)
+
+    cursor.execute(stock_query, stock_values)
+
+    conn.commit()
+
+    print("Sale Recorded Successfully!")
+
+
+
 while True:
 
     print("\n===== Inventory Management System =====")
@@ -131,7 +180,8 @@ while True:
     print("3. Update Product Stock")
     print("4. Delete Product")
     print("5. Add Purchase")
-    print("6. Exit")
+    print("6. Add Sale")
+    print("7. Exit")
 
     choice = input("\nEnter your choice: ")
 
@@ -151,6 +201,9 @@ while True:
         add_purchase()
 
     elif choice == "6":
+        add_sale()
+
+    elif choice == "7":
         print("Exiting Program...")
         break
 
