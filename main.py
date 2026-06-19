@@ -9,6 +9,8 @@ conn = mysql.connector.connect(
 
 cursor = conn.cursor()
 
+
+
 def view_products():
     cursor.execute("SELECT * FROM products")
 
@@ -22,7 +24,7 @@ def view_products():
         print(f"Stock: {row[4]}")
         print("-" * 30)
 
-# view_products()
+
 
 def add_product():
     name = input("Enter Product Name: ")
@@ -43,7 +45,7 @@ def add_product():
 
     print("Product Added Successfully!")
 
-# add_product()
+
 
 def update_product_stock():
 
@@ -66,7 +68,7 @@ def update_product_stock():
     else:
         print("Product ID Not Found!")
 
-# update_product_stock()
+
 
 def delete_product():
 
@@ -87,4 +89,70 @@ def delete_product():
     else:
         print("Product ID Not Found!")
 
-# delete_product()
+
+
+def add_purchase():
+
+    product_id = int(input("Enter Product ID: "))
+    quantity = int(input("Enter Purchase Quantity: "))
+    purchase_date = input("Enter Purchase Date (YYYY-MM-DD): ")
+
+    purchase_query = """
+    INSERT INTO purchases
+    (product_id, quantity, purchase_date)
+    VALUES (%s, %s, %s)
+    """
+
+    purchase_values = (product_id, quantity, purchase_date)
+
+    cursor.execute(purchase_query, purchase_values)
+
+    stock_query = """
+    UPDATE products
+    SET stock = stock + %s
+    WHERE product_id = %s
+    """
+
+    stock_values = (quantity, product_id)
+
+    cursor.execute(stock_query, stock_values)
+
+    conn.commit()
+
+    print("Purchase Recorded Successfully!")
+
+
+
+while True:
+
+    print("\n===== Inventory Management System =====")
+    print("1. View Products")
+    print("2. Add Product")
+    print("3. Update Product Stock")
+    print("4. Delete Product")
+    print("5. Add Purchase")
+    print("6. Exit")
+
+    choice = input("\nEnter your choice: ")
+
+    if choice == "1":
+        view_products()
+
+    elif choice == "2":
+        add_product()
+
+    elif choice == "3":
+        update_product_stock()
+
+    elif choice == "4":
+        delete_product()
+
+    elif choice == "5":
+        add_purchase()
+
+    elif choice == "6":
+        print("Exiting Program...")
+        break
+
+    else:
+        print("Invalid Choice! Try Again.")
