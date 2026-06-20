@@ -1,4 +1,5 @@
 import mysql.connector
+from openpyxl import Workbook
 
 conn = mysql.connector.connect(
     host="localhost",
@@ -171,6 +172,97 @@ def add_sale():
     print("Sale Recorded Successfully!")
 
 
+def low_stock_alert():
+
+    cursor.execute("""
+    SELECT product_id, product_name, stock
+    FROM products
+    WHERE stock < 5
+    """)
+
+    products = cursor.fetchall()
+
+    print("\n⚠ LOW STOCK PRODUCTS ⚠\n")
+
+    if len(products) == 0:
+        print("No low stock products found.")
+
+    else:
+        for product in products:
+            print(f"ID: {product[0]}")
+            print(f"Product: {product[1]}")
+            print(f"Stock: {product[2]}")
+            print("-" * 30)
+
+
+def inventory_report():
+
+    cursor.execute("SELECT COUNT(*) FROM products")
+    total_products = cursor.fetchone()[0]
+
+    cursor.execute("SELECT SUM(stock) FROM products")
+    total_stock = cursor.fetchone()[0]
+
+    cursor.execute("""
+    SELECT product_name, stock
+    FROM products
+    ORDER BY stock DESC
+    LIMIT 1
+    """)
+    highest_stock = cursor.fetchone()
+
+    cursor.execute("""
+    SELECT product_name, stock
+    FROM products
+    ORDER BY stock ASC
+    LIMIT 1
+    """)
+    lowest_stock = cursor.fetchone()
+
+    print("\n===== INVENTORY REPORT =====\n")
+
+    print(f"Total Products: {total_products}")
+    print(f"Total Stock Units: {total_stock}")
+
+    print(f"\nHighest Stock Product: {highest_stock[0]}")
+    print(f"Stock: {highest_stock[1]}")
+
+    print(f"\nLowest Stock Product: {lowest_stock[0]}")
+    print(f"Stock: {lowest_stock[1]}")
+
+    print("\n============================")
+
+
+def export_to_excel():
+
+    cursor.execute("""
+    SELECT product_id, product_name, category, price, stock
+    FROM products
+    """)
+
+    products = cursor.fetchall()
+
+    wb = Workbook()
+    ws = wb.active
+
+    ws.title = "Inventory Report"
+
+    ws.append([
+        "Product ID",
+        "Product Name",
+        "Category",
+        "Price",
+        "Stock"
+    ])
+
+    for product in products:
+        ws.append(product)
+
+    wb.save("inventory_report.xlsx")
+
+    print("Excel Report Exported Successfully!")
+
+
 
 while True:
 
@@ -181,7 +273,10 @@ while True:
     print("4. Delete Product")
     print("5. Add Purchase")
     print("6. Add Sale")
-    print("7. Exit")
+    print("7. Low Stock Alert")
+    print("8. Inventory Report")
+    print("9. Export Inventory Report to Excel")
+    print("10. Exit")
 
     choice = input("\nEnter your choice: ")
 
@@ -204,6 +299,15 @@ while True:
         add_sale()
 
     elif choice == "7":
+        low_stock_alert()
+
+    elif choice == "8":
+        inventory_report()
+
+    elif choice == "9":
+        export_to_excel()
+
+    elif choice == "10":
         print("Exiting Program...")
         break
 

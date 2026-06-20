@@ -67,3 +67,15 @@ SHOW TABLES;
 SELECT * FROM products;
 SELECT * FROM purchases;
 SELECT * FROM sales;
+
+DESC purchases;
+
+SELECT * FROM purchases;
+
+SELECT * FROM products;
+
+DESC sales;
+
+SELECT * FROM sales;
+
+SELECT * FROM products;
