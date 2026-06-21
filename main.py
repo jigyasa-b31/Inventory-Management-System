@@ -263,6 +263,86 @@ def export_to_excel():
     print("Excel Report Exported Successfully!")
 
 
+def search_product():
+
+    name = input("Enter Product Name: ")
+
+    query = """
+    SELECT *
+    FROM products
+    WHERE product_name = %s
+    """
+
+    cursor.execute(query, (name,))
+    result = cursor.fetchone()
+
+    if result:
+        print("\n----- PRODUCT FOUND -----")
+        print(f"ID: {result[0]}")
+        print(f"Product: {result[1]}")
+        print(f"Category: {result[2]}")
+        print(f"Price: ₹{result[3]}")
+        print(f"Stock: {result[4]}")
+        print("-" * 30)
+
+    else:
+        print("Product Not Found!")
+
+
+def purchase_history():
+
+    query = """
+    SELECT *
+    FROM purchases
+    ORDER BY purchase_date DESC
+    """
+
+    cursor.execute(query)
+
+    purchases = cursor.fetchall()
+
+    print("\n===== PURCHASE HISTORY =====\n")
+
+    if len(purchases) == 0:
+        print("No Purchase Records Found.")
+
+    else:
+        for purchase in purchases:
+
+            print(f"Purchase ID: {purchase[0]}")
+            print(f"Product ID : {purchase[1]}")
+            print(f"Quantity   : {purchase[2]}")
+            print(f"Date       : {purchase[3]}")
+            print("-" * 30)
+
+
+def sales_history():
+
+    query = """
+    SELECT *
+    FROM sales
+    ORDER BY sale_date DESC
+    """
+
+    cursor.execute(query)
+
+    sales = cursor.fetchall()
+
+    print("\n===== SALES HISTORY =====\n")
+
+    if len(sales) == 0:
+        print("No Sales Records Found.")
+
+    else:
+        for sale in sales:
+
+            print(f"Sale ID    : {sale[0]}")
+            print(f"Product ID : {sale[1]}")
+            print(f"Quantity   : {sale[2]}")
+            print(f"Date       : {sale[3]}")
+            print("-" * 30)
+
+
 
 while True:
 
@@ -276,7 +356,10 @@ while True:
     print("7. Low Stock Alert")
     print("8. Inventory Report")
     print("9. Export Inventory Report to Excel")
-    print("10. Exit")
+    print("10. Search Product")
+    print("11. Purchase History")
+    print("12. Sales History")
+    print("13. Exit")
 
     choice = input("\nEnter your choice: ")
 
@@ -308,6 +391,15 @@ while True:
         export_to_excel()
 
     elif choice == "10":
+        search_product()
+
+    elif choice == "11":
+        purchase_history()
+
+    elif choice == "12":
+        sales_history()
+
+    elif choice == "13":
         print("Exiting Program...")
         break
 
