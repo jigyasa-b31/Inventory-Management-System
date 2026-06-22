@@ -23,6 +23,9 @@ Inventory Management System is a database-driven project built using Python and 
 - Purchase History Report
 - Sales History Report
 - Excel Report Export
+- Input Validation
+- Exception Handling
+- Enhanced Console Interface
 
 ## Database Structure
 
@@ -46,6 +49,9 @@ Stores sales transactions.
 - ✅ Search Product Feature
 - ✅ Purchase History Report
 - ✅ Sales History Report
+- ✅ Input Validation
+- ✅ Exception Handling
+- ✅ Improved Console Interface
 
 ## Author
 Jigyasa Bareja
@@ -92,12 +98,19 @@ Jigyasa Bareja
 - Created Sales History Report
 - Enhanced inventory data retrieval and reporting
 
+### Day 6
+- Added input validation across major modules
+- Implemented exception handling
+- Improved product display formatting
+- Enhanced menu interface
+- Refactored and cleaned project code
+
 ### Upcoming
 - Enhanced Inventory Dashboard
-- Input Validation
-- Exception Handling
-- Improved Error Handling
-- Better Console Formatting
+- Product Search using Partial Matches
+- Advanced Reporting Features
+- Data Visualization with Charts
+- GUI Version (Future Enhancement)
 
 ## Current Features
 
@@ -136,3 +149,12 @@ Jigyasa Bareja
 
 ### User Interface
 - Menu-Driven Console Application
+- Enhanced Console Interface
+- Formatted Product Display
+- User-Friendly Error Messages
+
+### Validation & Security
+- Input Validation
+- Exception Handling
+- Stock Validation
+- Invalid Data Prevention

@@ -13,61 +13,96 @@ cursor = conn.cursor()
 
 
 def view_products():
+
     cursor.execute("SELECT * FROM products")
 
-    print("\n----- PRODUCTS -----\n")
+    print("\n" + "=" * 45)
+    print("       INVENTORY PRODUCTS")
+    print("=" * 45)
 
     for row in cursor:
-        print(f"ID: {row[0]}")
-        print(f"Product: {row[1]}")
-        print(f"Category: {row[2]}")
-        print(f"Price: ₹{row[3]}")
-        print(f"Stock: {row[4]}")
-        print("-" * 30)
+
+        print("-" * 40)
+        print(f"ID       : {row[0]}")
+        print(f"Product  : {row[1]}")
+        print(f"Category : {row[2]}")
+        print(f"Price    : ₹{row[3]}")
+        print(f"Stock    : {row[4]}")
+        print("-" * 40)
 
 
 
 def add_product():
-    name = input("Enter Product Name: ")
-    category = input("Enter Category: ")
-    price = float(input("Enter Price: "))
-    stock = int(input("Enter Stock: "))
 
-    query = """
-    INSERT INTO products
-    (product_name, category, price, stock)
-    VALUES (%s, %s, %s, %s)
-    """
+    try:
+        name = input("Enter Product Name: ").strip()
+        category = input("Enter Category: ").strip()
 
-    values = (name, category, price, stock)
+        if not name:
+            print("Product Name cannot be empty!")
+            return
 
-    cursor.execute(query, values)
-    conn.commit()
+        if not category:
+            print("Category cannot be empty!")
+            return
 
-    print("Product Added Successfully!")
+        price = float(input("Enter Price: "))
+        stock = int(input("Enter Stock: "))
+
+        if price < 0:
+            print("Price cannot be negative!")
+            return
+
+        if stock < 0:
+            print("Stock cannot be negative!")
+            return
+
+        query = """
+        INSERT INTO products
+        (product_name, category, price, stock)
+        VALUES (%s, %s, %s, %s)
+        """
+
+        values = (name, category, price, stock)
+
+        cursor.execute(query, values)
+        conn.commit()
+
+        print("Product Added Successfully!")
+
+    except ValueError:
+        print("Invalid Input! Please enter valid numeric values.")
 
 
 
 def update_product_stock():
 
-    product_id = int(input("Enter Product ID: "))
-    new_stock = int(input("Enter New Stock: "))
+    try:
+        product_id = int(input("Enter Product ID: "))
+        new_stock = int(input("Enter New Stock: "))
 
-    query = """
-    UPDATE products
-    SET stock = %s
-    WHERE product_id = %s
-    """
+        if new_stock < 0:
+            print("Stock cannot be negative!")
+            return
 
-    values = (new_stock, product_id)
+        query = """
+        UPDATE products
+        SET stock = %s
+        WHERE product_id = %s
+        """
 
-    cursor.execute(query, values)
-    conn.commit()
+        values = (new_stock, product_id)
 
-    if cursor.rowcount > 0:
-        print("Stock Updated Successfully!")
-    else:
-        print("Product ID Not Found!")
+        cursor.execute(query, values)
+        conn.commit()
+
+        if cursor.rowcount > 0:
+            print("Stock Updated Successfully!")
+        else:
+            print("Product ID Not Found!")
+
+    except ValueError:
+        print("Invalid Input! Please enter valid numbers.")
 
 
 
@@ -94,82 +129,100 @@ def delete_product():
 
 def add_purchase():
 
-    product_id = int(input("Enter Product ID: "))
-    quantity = int(input("Enter Purchase Quantity: "))
-    purchase_date = input("Enter Purchase Date (YYYY-MM-DD): ")
+    try:
+        product_id = int(input("Enter Product ID: "))
+        quantity = int(input("Enter Purchase Quantity: "))
 
-    purchase_query = """
-    INSERT INTO purchases
-    (product_id, quantity, purchase_date)
-    VALUES (%s, %s, %s)
-    """
+        if quantity <= 0:
+            print("Quantity must be greater than 0!")
+            return
 
-    purchase_values = (product_id, quantity, purchase_date)
+        purchase_date = input("Enter Purchase Date (YYYY-MM-DD): ")
 
-    cursor.execute(purchase_query, purchase_values)
+        purchase_query = """
+        INSERT INTO purchases
+        (product_id, quantity, purchase_date)
+        VALUES (%s, %s, %s)
+        """
 
-    stock_query = """
-    UPDATE products
-    SET stock = stock + %s
-    WHERE product_id = %s
-    """
+        purchase_values = (product_id, quantity, purchase_date)
 
-    stock_values = (quantity, product_id)
+        cursor.execute(purchase_query, purchase_values)
 
-    cursor.execute(stock_query, stock_values)
+        stock_query = """
+        UPDATE products
+        SET stock = stock + %s
+        WHERE product_id = %s
+        """
 
-    conn.commit()
+        stock_values = (quantity, product_id)
 
-    print("Purchase Recorded Successfully!")
+        cursor.execute(stock_query, stock_values)
+
+        conn.commit()
+
+        print("Purchase Recorded Successfully!")
+
+    except ValueError:
+        print("Invalid Input! Please enter valid numbers.")
 
 
 
 def add_sale():
 
-    product_id = int(input("Enter Product ID: "))
-    quantity = int(input("Enter Sale Quantity: "))
-    sale_date = input("Enter Sale Date (YYYY-MM-DD): ")
+    try:
+        product_id = int(input("Enter Product ID: "))
+        quantity = int(input("Enter Sale Quantity: "))
 
-    cursor.execute(
-        "SELECT stock FROM products WHERE product_id = %s",
-        (product_id,)
-    )
+        if quantity <= 0:
+            print("Quantity must be greater than 0!")
+            return
 
-    result = cursor.fetchone()
+        sale_date = input("Enter Sale Date (YYYY-MM-DD): ")
 
-    if result is None:
-        print("Product ID Not Found!")
-        return
+        cursor.execute(
+            "SELECT stock FROM products WHERE product_id = %s",
+            (product_id,)
+        )
 
-    current_stock = result[0]
+        result = cursor.fetchone()
 
-    if quantity > current_stock:
-        print("Not Enough Stock Available!")
-        return
+        if result is None:
+            print("Product ID Not Found!")
+            return
 
-    sale_query = """
-    INSERT INTO sales
-    (product_id, quantity, sale_date)
-    VALUES (%s, %s, %s)
-    """
+        current_stock = result[0]
 
-    sale_values = (product_id, quantity, sale_date)
+        if quantity > current_stock:
+            print("Not Enough Stock Available!")
+            return
 
-    cursor.execute(sale_query, sale_values)
+        sale_query = """
+        INSERT INTO sales
+        (product_id, quantity, sale_date)
+        VALUES (%s, %s, %s)
+        """
 
-    stock_query = """
-    UPDATE products
-    SET stock = stock - %s
-    WHERE product_id = %s
-    """
+        sale_values = (product_id, quantity, sale_date)
 
-    stock_values = (quantity, product_id)
+        cursor.execute(sale_query, sale_values)
 
-    cursor.execute(stock_query, stock_values)
+        stock_query = """
+        UPDATE products
+        SET stock = stock - %s
+        WHERE product_id = %s
+        """
 
-    conn.commit()
+        stock_values = (quantity, product_id)
 
-    print("Sale Recorded Successfully!")
+        cursor.execute(stock_query, stock_values)
+
+        conn.commit()
+
+        print("Sale Recorded Successfully!")
+
+    except ValueError:
+        print("Invalid Input! Please enter valid numbers.")
 
 
 def low_stock_alert():
@@ -346,20 +399,25 @@ def sales_history():
 
 while True:
 
-    print("\n===== Inventory Management System =====")
-    print("1. View Products")
-    print("2. Add Product")
-    print("3. Update Product Stock")
-    print("4. Delete Product")
-    print("5. Add Purchase")
-    print("6. Add Sale")
-    print("7. Low Stock Alert")
-    print("8. Inventory Report")
-    print("9. Export Inventory Report to Excel")
+    print("\n" + "=" * 50)
+    print("     INVENTORY MANAGEMENT SYSTEM")
+    print("=" * 50)
+
+    print("1.  View Products")
+    print("2.  Add Product")
+    print("3.  Update Product Stock")
+    print("4.  Delete Product")
+    print("5.  Add Purchase")
+    print("6.  Add Sale")
+    print("7.  Low Stock Alert")
+    print("8.  Inventory Report")
+    print("9.  Export Inventory to Excel")
     print("10. Search Product")
     print("11. Purchase History")
     print("12. Sales History")
     print("13. Exit")
+
+    print("=" * 50)
 
     choice = input("\nEnter your choice: ")
 
